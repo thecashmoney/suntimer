@@ -9,6 +9,15 @@ function App() {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    fetch('https://api.ipify.org')
+      .then((response) => response.text())
+      .then((ip) => fetch('https://ipapi.co/' + ip + '/latlong/'))
+      .then((response) => response.text())
+      
+      .catch((error) => console.error('Error fetching IP:', error))
+  }, [])
+
   const hour = time.getHours()
   const isDay = hour >= 6 && hour < 18
 
