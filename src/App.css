@@ -1,0 +1,24 @@
+.day, .night {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.day {
+  background-color: #f5f5f5;
+  color: #222;
+}
+
+.night {
+  background-color: #1a1a2e;
+  color: #eee;
+}
+
+h1 {
+  font-size: 6rem;
+  font-weight: 300;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
