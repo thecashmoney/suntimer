@@ -1,37 +1,36 @@
 import { useState, useEffect } from 'react'
+import useSWR from 'swr'
 import './App.css'
 
 function App() {
+  const fetchJSON = (url) => fetch(url).then((res) => res.json())
+  const fetchText = (url) => fetch(url).then((res) => res.text())
+
+  const { data: ip } = useSWR('https://api.ipify.org', fetchText)
+
+  const { data: latlong } = useSWR( ip ? 'https://ipapi.co/' + ip + '/latlong/' : null, fetchText)
+
+  const [lat, long] = latlong ? latlong.split(',') : [null, null]
+
+  const { data: today } = useSWR(lat ? 'https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + long + '&date=today' : null, fetchJSON)
+  const { data: tomorrow } = useSWR(lat ? 'https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + long + '&date=tomorrow' : null, fetchJSON)
+  
+
+  //time fetching
   const [time, setTime] = useState(new Date())
-  const [sunrise, setSunrise] = useState(new Date())
-  const [sunset, setSunset] = useState(new Date())
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    const latlong = fetch('https://api.ipify.org')
-      .then((response) => response.text())
-      .then((ip) => fetch('https://ipapi.co/' + ip + '/latlong/'))
-      .then((response) => response.text())
-      .then((latlong) => latlong.split(','))
 
-      latlong.then(([lat, long]) => fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + long + '&date=today'))
-      .then((response) => response.json())
-      .then((data) => setSunset(new Date(new Date().toDateString() + ' ' + data.results.sunset + ' UTC')))
+  if (!today || !tomorrow) return <p>Loading...</p>
 
-      const tomorrow = new Date()
-      tomorrow.setDate(tomorrow.getDate() + 1)
+  const sunset = new Date(new Date().toDateString() + ' ' + today.results.sunset + ' UTC')
+  const sunrise = new Date(new Date().toDateString() + ' ' + tomorrow.results.sunrise + ' UTC')
 
-      latlong.then(([lat, long]) => fetch('https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + long + '&date=tomorrow'))
-      .then((response) => response.json())
-      .then((data) => setSunrise(new Date(tomorrow.toDateString() + ' ' + data.results.sunrise + ' UTC')))
-
-      .catch((error) => console.error('Error fetching IP:', error))
-  }, [])
-
+  //day/night calculation
   const now = time.getHours() * 60 + time.getMinutes()
   const isDay = now < (sunset.getHours() * 60 + sunset.getMinutes()) && now > (sunrise.getHours() * 60 + sunrise.getMinutes())
 
