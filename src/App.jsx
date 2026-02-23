@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import './App.css'
 
@@ -16,22 +15,13 @@ function App() {
   const { data: tomorrow } = useSWR(lat ? 'https://api.sunrise-sunset.org/json?lat=' + lat + '&lng=' + long + '&date=tomorrow' : null, fetchJSON)
   
 
-  //time fetching
-  const [time, setTime] = useState(new Date())
-
-  useEffect(() => {
-    const interval = setInterval(() => setTime(new Date()), 1000)
-    return () => clearInterval(interval)
-  }, [])
-
-
   if (!today || !tomorrow) return <p>Loading...</p>
 
   const sunset = new Date(new Date().toDateString() + ' ' + today.results.sunset + ' UTC')
   const sunrise = new Date(new Date().toDateString() + ' ' + tomorrow.results.sunrise + ' UTC')
 
   //day/night calculation
-  const now = time.getHours() * 60 + time.getMinutes()
+  const now = new Date().getHours() * 60 + new Date().getMinutes()
   const isDay = now < (sunset.getHours() * 60 + sunset.getMinutes()) && now > (sunrise.getHours() * 60 + sunrise.getMinutes())
 
   return (
