@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import useSWR from 'swr'
 import './App.css'
+import Scene from './Scene.jsx'
 
 function App() {
   const fetchJSON = (url) => fetch(url).then((res) => res.json())
@@ -33,9 +34,10 @@ function App() {
   const isDay = now < (sunset.getHours() * 60 + sunset.getMinutes()) && now > (sunrise.getHours() * 60 + sunrise.getMinutes())
 
   return (
-    <div className={isDay ? 'day' : 'night'}>
-      <h1>{isDay ?  sunset.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : sunrise.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h1>
-    </div>
+    <Scene time={time} suntime={isDay ? sunrise: sunset} />
+    // <div className={isDay ? 'day' : 'night'}>
+    //   <h1>{isDay ?  sunset.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : sunrise.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h1>
+    // </div>
   )
 }
 

@@ -7,3 +7,8 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+Canvas {
+  width: 100vw;
+  height: 100vh;
+}
